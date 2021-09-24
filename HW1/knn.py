@@ -108,6 +108,6 @@ class KNN:
         features_cat = self.features[_cat_cols]
         # Compute the distance
         dist_num = cdist(x_num, features_num).squeeze(0)
-        dist_cat = np.sum(10 * (x_cat == features_cat), axis=1)
+        dist_cat = np.sum(10 * (x_cat != features_cat), axis=1)
         dist = pd.Series(dist_num + dist_cat, index=self.index)
         return dist
