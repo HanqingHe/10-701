@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
 from time import time
 from typing import Tuple
 
-import numpy as np
+import matplotlib as mpl
 import pandas as pd
 
 
@@ -41,6 +40,35 @@ class Timer:
             print(f"Wall time of {self.prompt}: {self.seconds:.1f} seconds")
         else:
             print(f"Wall time: {self.seconds:.1f} seconds")
+
+
+def mpl_default_setting():
+    mpl.rcParams['axes.labelsize'] = 'large'
+
+    mpl.rcParams['figure.figsize'] = (8, 6)
+    mpl.rcParams['figure.subplot.hspace'] = 0.3
+    mpl.rcParams['figure.subplot.wspace'] = 0.3
+    mpl.rcParams['figure.titlesize'] = 'large'
+
+    mpl.rcParams['font.family'] = ['Arial']
+    mpl.rcParams['font.size'] = 16
+
+    mpl.rcParams['legend.fontsize'] = 'small'
+    mpl.rcParams['legend.loc'] = 'upper right'
+
+    mpl.rcParams['xtick.direction'] = 'in'
+    mpl.rcParams['xtick.labelsize'] = 'large'
+    mpl.rcParams['xtick.major.size'] = 10
+    mpl.rcParams['xtick.minor.size'] = 5
+    mpl.rcParams['ytick.direction'] = 'in'
+    mpl.rcParams['ytick.labelsize'] = 'large'
+    mpl.rcParams['ytick.major.size'] = 10
+    mpl.rcParams['ytick.minor.size'] = 5
+
+    mpl.rcParams['savefig.dpi'] = 300
+    mpl.rcParams['savefig.format'] = 'png'
+    mpl.rcParams['savefig.transparent'] = False
+    mpl.rcParams['savefig.bbox'] = 'tight'
 
 
 def split_nan(dset: pd.DataFrame, ignore_index=False) -> Tuple[pd.DataFrame, pd.DataFrame]:
