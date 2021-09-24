@@ -52,7 +52,7 @@ def split_nan(dset: pd.DataFrame, ignore_index=False) -> Tuple[pd.DataFrame, pd.
     return dset_clean, dset_nan
 
 
-def split_xy(dset: pd.DataFrame, target: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def split_xy(dset: pd.DataFrame, target: str) -> Tuple[pd.DataFrame, pd.Series]:
     _dset = dset.copy()
     X = _dset.drop(columns=target)
     y = _dset[target]
