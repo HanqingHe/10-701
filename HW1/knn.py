@@ -23,6 +23,8 @@ class KNN:
         Xy = pd.concat([X, y], axis=1).dropna(axis=0, how='any')
         _X, _y = Xy[X.columns], Xy[y.name]
         # Initialization
+        self.features = _X
+        self.labels = _y
         self.index = _X.index
         self.target = _y.name
         self.columns = _X.columns
