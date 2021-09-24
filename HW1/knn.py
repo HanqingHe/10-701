@@ -17,14 +17,18 @@ class KNN:
         self.cat_cols = pd.Index([])
 
     def train(self, X: pd.DataFrame, y: pd.Series):
+        # Sanity check
         assert all(X.index == y.index), "Indices mismatch"
-        self.features = X.copy()
-        self.labels = y.copy()
-        self.index = X.index
-        self.target = y.name
-        self.columns = X.columns
-        self.num_cols = X.select_dtypes(include='number').columns
-        self.cat_cols = X.select_dtypes(exclude='number').columns
+        # Drop rows with missing data
+        Xy = pd.concat([X, y], axis=1).dropna(axis=0, how='any')
+        _X, _y = Xy[X.columns], Xy[y.name]
+        # Initialization
+        self.index = _X.index
+        self.target = _y.name
+        self.columns = _X.columns
+        self.num_cols = _X.select_dtypes(include='number').columns
+        self.cat_cols = _X.select_dtypes(exclude='number').columns
+        self.cat_cols = self.columns.drop(self.num_cols)
 
     def predict(self, x: pd.Series, return_neighbors: bool = False):
         # Compute all pairwise distances
