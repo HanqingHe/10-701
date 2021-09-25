@@ -4,13 +4,12 @@ import pandas as pd
 
 class NB:
     def __init__(self):
-        self.index = pd.Index([])
-        self.target = ""
-        self.columns = pd.Index([])
-        self.num_cols = pd.Index([])
-        self.cat_cols = pd.Index([])
-        self.py = {}
-        self.px = {}
+        self.target = ""  # name of the label
+        self.columns = pd.Index([])  # name of the features
+        self.num_cols = pd.Index([])  # name of numerical features
+        self.cat_cols = pd.Index([])  # name of categorical features
+        self.py = {}  # P(y)
+        self.px = {}  # P(xi|y)
 
     def train(self, X: pd.DataFrame, y: pd.Series):
         # Sanity check
@@ -19,7 +18,6 @@ class NB:
         Xy = pd.concat([X, y], axis=1).dropna(axis=0, how='any')
         _X, _y = Xy[X.columns], Xy[y.name]
         # Initialization
-        self.index = _X.index
         self.target = _y.name
         self.columns = _X.columns
         self.num_cols = _X.select_dtypes(include='number').columns
@@ -43,6 +41,17 @@ class NB:
                                              for feature, xi in X_cat_given_y.iteritems()}
 
     def predict(self, X: pd.DataFrame, return_LL: bool = False):
+        r"""Predict the labels of all the instances in a feature matrix
+
+        Args:
+            X: pd.DataFrame
+            return_LL: bool
+                If set to True, return the log-posterior
+
+        Returns:
+            pred (return_LL=False)
+            pred, LL (return_LL=True)
+        """
         pred = []
         LL = []
         for index, x in X.iterrows():
@@ -66,6 +75,14 @@ class NB:
             return pred
 
     def LL_numerical(self, x: pd.Series) -> pd.Series:
+        r"""Log-likelihood of all numerical features of a given instance
+
+        Args:
+            x: pd.Series
+
+        Returns:
+            pd.Series
+        """
         _num_cols = self.num_cols.drop(x.index[x.isna()], errors='ignore')
         _x = x[_num_cols].to_numpy()
         _ll = {}
@@ -76,6 +93,14 @@ class NB:
         return pd.Series(_ll)
 
     def LL_categorical(self, x: pd.Series) -> pd.Series:
+        r"""Log-posterior of all categorical features of a given instance
+
+        Args:
+            x: pd.Series
+
+        Returns:
+            pd.Series
+        """
         _cat_cols = self.cat_cols.drop(x.index[x.isna()], errors='ignore')
         _x = x[_cat_cols]
         _ll = {}
@@ -86,6 +111,16 @@ class NB:
 
     @staticmethod
     def log_gaussian(x: np.ndarray, mean: np.ndarray, std: np.ndarray) -> np.ndarray:
+        r"""Log-probability from a Gaussian distribution
+
+        Args:
+            x: np.ndarray
+            mean: np.ndarray
+            std: np.ndarray
+
+        Returns:
+            res
+        """
         epsilon = 1e-9
         mu = mean
         s2 = np.square(std) + epsilon
@@ -93,4 +128,3 @@ class NB:
         A = -np.square(x - mu) / (2 * s2)
         res = c0 + A
         return res
-

@@ -43,6 +43,12 @@ class Timer:
 
 
 def mpl_default_setting():
+    r"""Default matplotlib setting for plot formats
+
+    Returns:
+        None
+
+    """
     mpl.rcParams['axes.labelsize'] = 'large'
 
     mpl.rcParams['figure.figsize'] = (8, 6)
@@ -71,7 +77,16 @@ def mpl_default_setting():
     mpl.rcParams['savefig.bbox'] = 'tight'
 
 
-def split_nan(dset: pd.DataFrame, ignore_index=False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def split_nan(dset: pd.DataFrame, ignore_index: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    r"""Separate rows with missing data from others
+
+    Args:
+        dset: pd.DataFrame
+        ignore_index: bool
+
+    Returns:
+        dset_clean, dset_nan
+    """
     dset_clean = dset.dropna(axis=0, how='any')
     dset_nan = dset[dset.isna().any(axis=1)]
     if ignore_index:
@@ -81,6 +96,16 @@ def split_nan(dset: pd.DataFrame, ignore_index=False) -> Tuple[pd.DataFrame, pd.
 
 
 def split_xy(dset: pd.DataFrame, target: str) -> Tuple[pd.DataFrame, pd.Series]:
+    r"""Split dataset into a feature matrix and a label vector
+
+    Args:
+        dset: pd.DataFrame
+        target: str
+            Name of the label
+
+    Returns:
+        X, y
+    """
     _dset = dset.copy()
     X = _dset.drop(columns=target)
     y = _dset[target]

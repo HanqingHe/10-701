@@ -42,8 +42,8 @@ def impute_datasets(train_path: str, test_path: str,
     dset_test_imputed.to_csv(test_imputed_path, index=False)
 
 
+# 5.1
 def report_parameters(X: pd.DataFrame, y: pd.Series):
-
     nb = NB()
     nb.train(X, y)
 
@@ -73,6 +73,7 @@ def report_parameters(X: pd.DataFrame, y: pd.Series):
     print(LL)
 
 
+# 5.2.1 ~ 5.2.4
 def evaluation(X_train: pd.DataFrame, y_train: pd.Series,
                X_train_imputed: pd.DataFrame, y_train_imputed: pd.Series) -> Tuple[NB, NB]:
     nb = NB()
@@ -86,13 +87,13 @@ def evaluation(X_train: pd.DataFrame, y_train: pd.Series,
     return nb, nb_imputed
 
 
+# 5.2.5
 def generate_learning_curves(dset_train: pd.DataFrame,
                              dset_test: pd.DataFrame,
                              dset_train_imputed: pd.DataFrame,
                              dset_test_imputed: pd.DataFrame,
                              target: str,
                              res_path: str, res_imputed_path: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
-
     res = {'n_data': [], 'train_acc': [], 'test_acc': []}
     res_imputed = {'n_data': [], 'train_acc': [], 'test_acc': []}
 
@@ -125,6 +126,7 @@ def generate_learning_curves(dset_train: pd.DataFrame,
     return res, res_imputed
 
 
+# 5.2.5
 def plot_learning_curves(res_path: str, res_imputed_path: str):
     res = pd.read_csv(res_path)
     res_imputed = pd.read_csv(res_imputed_path)
@@ -186,12 +188,14 @@ if __name__ == '__main__':
     X_train_imputed, y_train_imputed = split_xy(dset_train_imputed, target)
     X_test_imputed, y_test_imputed = split_xy(dset_test_imputed, target)
 
+    # 5.1
     report_parameters(X_train_imputed, y_train_imputed)
 
+    # 5.2.1 ~ 5.2.4
     evaluation(X_train, y_train, X_train_imputed, y_train_imputed)
 
+    # 5.2.5
     generate_learning_curves(dset_train, dset_test,
                              dset_train_imputed, dset_test_imputed,
                              target, res_path, res_imputed_path)
-
     plot_learning_curves(res_path, res_imputed_path)

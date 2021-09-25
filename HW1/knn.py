@@ -7,14 +7,14 @@ from scipy.spatial.distance import cdist
 
 class KNN:
     def __init__(self, k: int):
-        self.k = k
-        self.features = pd.DataFrame([])
-        self.labels = pd.Series([])
-        self.index = pd.Index([])
-        self.target = ""
-        self.columns = pd.Index([])
-        self.num_cols = pd.Index([])
-        self.cat_cols = pd.Index([])
+        self.k = k  # number of nearest neighbors to be found
+        self.features = pd.DataFrame([])  # feature matrix
+        self.labels = pd.Series([])  # label vector
+        self.index = pd.Index([])  # indices of all the rows
+        self.target = ""  # name of the label
+        self.columns = pd.Index([])  # indices of all the columns
+        self.num_cols = pd.Index([])  # indices of numerical columns
+        self.cat_cols = pd.Index([])  # indices of categorical columns
 
     def train(self, X: pd.DataFrame, y: pd.Series):
         # Sanity check
@@ -33,6 +33,18 @@ class KNN:
         self.cat_cols = self.columns.drop(self.num_cols)
 
     def predict(self, x: pd.Series, return_neighbors: bool = False):
+        r"""Predict the label of a single instance
+
+        Args:
+            x: pd.Series
+            return_neighbors: bool
+                If set to true, return the k nearest neighbors of
+                the given instance, along with the the label
+
+        Returns:
+            label_pred (return_neighbors=False)
+            label_pred, neighbors (return_neighbors=True)
+        """
         # Compute all pairwise distances
         dists = self.distance(x)
         # Select the k nearest neighbors
@@ -50,6 +62,14 @@ class KNN:
             return label_pred
 
     def impute(self, X: pd.DataFrame) -> pd.DataFrame:
+        r"""Impute the missing value of the given dataset
+
+        Args:
+            X: pd.DataFrame
+
+        Returns:
+            X_imputed
+        """
         # Sanity check
         assert all(X.columns == self.columns), "Entries mismatch"
         # Combine X and self.features into the entire dataset
@@ -95,6 +115,14 @@ class KNN:
         return X_imputed
 
     def distance(self, x: pd.Series) -> pd.Series:
+        r"""Pairwise distance between the given instance and all the instances in the model
+
+        Args:
+            x: pd.Series
+
+        Returns:
+            dist
+        """
         # Sanity check
         assert all(x.index == self.columns), "Entries mismatch"
         # Drop columns with missing values
