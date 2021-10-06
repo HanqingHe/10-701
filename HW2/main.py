@@ -35,7 +35,12 @@ def dataset_preprocess(train_path: str, test_path: str,
 
     X_train_encoded = onehot_encoder(binary_encoder(X_train, ['Urban', 'US']), 'ShelveLoc')
     X_test_encoded = onehot_encoder(binary_encoder(X_test, ['Urban', 'US']), 'ShelveLoc')
-    X_train_clean, X_test_clean = standardize(X_train_encoded, X_test_encoded)
+    X_train_clean, X_test_clean = standardize(X_train_encoded, X_test_encoded,
+                                              ignore_cols=pd.Index(['ShelveLocBad',
+                                                                    'ShelveLocGood',
+                                                                    'ShelveLocMedium',
+                                                                    'Urban',
+                                                                    'US']))
 
     train_clean = pd.concat([y_train, X_train_clean], axis=1)
     test_clean = pd.concat([y_test, X_test_clean], axis=1)
