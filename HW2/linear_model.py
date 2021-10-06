@@ -134,8 +134,8 @@ class LinearRegression:
             # dJ/dw = 2 (y_pred - y) x + lambda * sgn w
             dw += self.pen * np.sign(self.w)
         elif self.reg == 'l2':
-            # dJ/dw = 2 (y_pred - y) x + lambda * w
-            dw += self.pen * self.w
+            # dJ/dw = 2 (y_pred - y) x + 2 * lambda * w
+            dw += 2 * self.pen * self.w
         else:
             raise NotImplementedError
         # dJ/db
