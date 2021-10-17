@@ -91,18 +91,22 @@ def plot_image(vector, out_f_name, label=None):
     plt.savefig(f'{out_f_name}.png', bbox_inches='tight')
 
 
-def split_xy(dset: pd.DataFrame, target: str) -> Tuple[pd.DataFrame, pd.Series]:
+def split_xy(dset: pd.DataFrame, target) -> Tuple[pd.DataFrame, pd.Series]:
     r"""Split dataset into a feature matrix and a label vector
 
     Args:
         dset: pd.DataFrame
-        target: str
+        target:
             Name of the label
 
     Returns:
         X, y
     """
     _dset = dset.copy()
-    X = _dset.drop(columns=target)
-    y = _dset[target]
+    if isinstance(target, int):
+        _target = target if target >= 0 else dset.shape[1] + target
+    else:
+        _target = target
+    X = _dset.drop(columns=_target)
+    y = _dset[_target]
     return X, y
