@@ -91,6 +91,22 @@ def plot_image(vector, out_f_name, label=None):
     plt.savefig(f'{out_f_name}.png', bbox_inches='tight')
 
 
+def plot_diff(x: np.ndarray, x_ref: np.ndarray,
+              tol: float = 1e-14, **kwargs):
+    n_bins = kwargs.get('n_bins', 100)
+    xlabel = kwargs.get('xlabel', r'$\log_{10}|x - x_{ref}|$')
+    ylabel = kwargs.get('ylabel', 'Counts')
+    title = kwargs.get('title', r'Distribution of $\log_{10}|x - x_{ref}|$')
+    diff = np.abs(x - x_ref)
+    log10_diff = np.log10(diff[diff >= tol])
+    # Plot
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.hist(log10_diff, n_bins)
+    plt.show()
+
+
 def split_xy(dset: pd.DataFrame, target) -> Tuple[pd.DataFrame, pd.Series]:
     r"""Split dataset into a feature matrix and a label vector
 
