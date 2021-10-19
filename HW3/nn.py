@@ -231,7 +231,7 @@ class NN:
         if len(x.shape) != 2:
             raise ValueError("x should be 2-dimensional")
         ex = np.exp(x)
-        out = ex / np.einsum('nk->n', ex)[:, None]  # n: samples, k: classes
+        out = ex / np.sum(ex, axis=1, keepdims=True)  # n: samples, k: classes
         return out
 
     @staticmethod
