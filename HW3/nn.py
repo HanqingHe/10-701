@@ -91,7 +91,7 @@ class NN:
         # Load weights and biases
         w1, w2 = self.weights
         b1, b2 = self.biases
-        losses = {'avg_train_loss': [],
+        losses = {'train_loss': [],
                   'test_loss': [],
                   'test_acc': []}
         for i_epoch in range(epoch):
@@ -128,9 +128,9 @@ class NN:
                                      'o1': o1,
                                      'o2': o2}
             # Calculate losses
-            avg_train_loss, _ = self.loss_and_acc(train_x, train_y)
+            train_loss, _ = self.loss_and_acc(train_x, train_y)
             test_loss, test_acc = self.loss_and_acc(test_x, test_y)
-            losses['avg_train_loss'].append(avg_train_loss)
+            losses['train_loss'].append(train_loss)
             losses['test_loss'].append(test_loss)
             losses['test_acc'].append(test_acc)
         return losses
