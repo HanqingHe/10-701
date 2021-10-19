@@ -42,6 +42,8 @@ class NN:
             # Store weights and biases
             self.weights = [alpha1, alpha2]
             self.biases = [beta1, beta2]
+            # Store intermediate variables
+            self.int_vars = {}
         elif isinstance(init, dict):
             try:
                 assert len(init['weights']) == len(init['biases']) == 2
@@ -60,7 +62,8 @@ class NN:
 
     def fit(self, train_x: np.ndarray, train_y: np.ndarray,
             test_x: np.ndarray, test_y: np.ndarray,
-            batch_size: int = 1, epoch: int = 15, lr: float = 0.01) -> dict:
+            batch_size: int = 1, epoch: int = 15, lr: float = 0.01,
+            store_vars: bool = False) -> dict:
         try:
             assert len(train_x.shape) == len(test_x.shape) == 2
             assert len(train_y.shape) == len(test_y.shape) == 1
@@ -116,6 +119,14 @@ class NN:
                 w2 -= lr * dloss_dw2
                 b1 -= lr * dloss_db1
                 b2 -= lr * dloss_db2
+                # Store intermediate variables when required
+                if store_vars:
+                    self.int_vars = {'a1': a1,
+                                     'a2': a2,
+                                     'b1': b1,
+                                     'b2': b2,
+                                     'o1': o1,
+                                     'o2': o2}
             # Calculate losses
             avg_train_loss, _ = self.loss_and_acc(train_x, train_y)
             test_loss, test_acc = self.loss_and_acc(test_x, test_y)
