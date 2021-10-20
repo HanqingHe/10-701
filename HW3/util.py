@@ -80,22 +80,22 @@ def mpl_default_setting():
     mpl.rcParams['savefig.bbox'] = 'tight'
 
 
-def plot_image(vector, out_f_name, label=None):
+def plot_image(vector, title=None):
     """
     Takes a vector as input of size (784) and saves as an image
     """
     image = np.asarray(vector).reshape(28, 28)
     plt.imshow(image, cmap='gray')
-    if label:
-        plt.title(label)
+    if title:
+        plt.title(title)
     plt.axis('off')
-    plt.savefig(f'{out_f_name}.png', bbox_inches='tight')
+    plt.show()
 
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
-                          cmap=plt.get_cmap('Blues')):
+                          cmap='Blues'):
     r"""Plot confusion matrix
 
     This function prints and plots the confusion matrix.
