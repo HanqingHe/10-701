@@ -6,22 +6,46 @@ import numpy as np
 
 class NN:
     def __init__(self, n_hidden_nodes: int = 256,
-                 init: Union[str, dict] = 'load',
-                 init_param_dir: str = './params/'):
+                 method: str = 'load', **kwargs):
         r"""Neural network with a single hidden layer
 
         Args:
             n_hidden_nodes: int
-            init: Union[str, dict]
-                'load': load initial parameters from file (./params/)
-                dict: {'weights': List[np.ndarray]
-                                  Shapes: [(dim_input, n_hidden_nodes), (n_hidden_nodes, n_classes)]
-                       'biases': List[np.ndarray]
-                                 Shapes: [(n_hidden_nodes,), (n_classes,)]
-            init_param_dir: str
-                Directory storing parameters
+            method: str
+                'load': load initial parameters from file
+                'zero': initialize parameters with zeros
+                'uniform': initialize weights using uniform distribution
+                'xavier': xavier initialization
+                'normal': initialize weights using normal distribution
+            kwargs:
+                Additional settings for initialization
+                When method == 'load':
+                    'init_param_dir': str
+                        Path to the directory of saved parameters
+                        Default: './params/'
+                When method in ('zero', 'uniform', 'xavier', 'normal'):
+                    'shapes': tuple
+                        The number of nodes per layer
+                        E.g. for a NN with 784 input nodes, 256 hidden nodes
+                             and 10 output nodes, 'shapes' should be
+                             (784, 256, 10)
+                When method == 'uniform':
+                    'low': float
+                        Lower limit of the uniform distribution
+                        Default: 0.0
+                    'high': float
+                        Upper limit of the uniform distribution
+                        Default: 1.0
+                When method == 'normal':
+                    'mean': float
+                        Mean of the normal distribution
+                        Default: 0.0
+                    'std': float
+                        Standard deviation of the normal distribution
+                        Default: 1.0
         """
-        if init == 'load':
+        if method == 'load':
+            init_param_dir = kwargs.get('init_param_dir', './params/')
             alpha1_path = os.path.join(init_param_dir, 'alpha1.txt')
             beta1_path = os.path.join(init_param_dir, 'beta1.txt')
             alpha2_path = os.path.join(init_param_dir, 'alpha2.txt')
@@ -44,21 +68,12 @@ class NN:
             self.biases = [beta1, beta2]
             # Store intermediate variables
             self.int_vars = {}
-        elif isinstance(init, dict):
-            try:
-                assert len(init['weights']) == len(init['biases']) == 2
-                alpha1, alpha2 = init['weights']
-                beta1, beta2 = init['biases']
-            except (AssertionError, KeyError):
-                raise ValueError("Must input 2 weight matrices and 2 bias vectors")
-            try:
-                assert alpha1.shape[0] == beta1.shape[0] == alpha2.shape[1] == n_hidden_nodes
-                assert alpha2.shape[0] == beta2.shape[0]
-            except (AssertionError, IndexError):
-                raise ValueError("Dimensions of parameters do not match")
-            self.n_hidden_nodes = n_hidden_nodes
-            self.weights = init['weights']
-            self.biases = init['biases']
+        elif method in ('zero', 'uniform', 'xavier', 'normal'):
+            shapes = kwargs['shapes']
+            init_opts = kwargs.get('init_opts', {})
+            self.weights, self.biases = self.param_init(shapes, method, **init_opts).values()
+        else:
+            raise ValueError('Unsupported initialization method')
 
     def fit(self, train_x: np.ndarray, train_y: np.ndarray,
             test_x: np.ndarray, test_y: np.ndarray,
@@ -269,3 +284,41 @@ class NN:
         for idx_start in range(0, n_data - batch_size + 1, batch_size):
             batch_slice = np.s_[idx_start: idx_start + batch_size]
             yield x[batch_slice], y[batch_slice]
+
+    @staticmethod
+    def param_init(shapes: tuple, method: str, **kwargs) -> dict:
+        # Fix random seed for reproducible results
+        seed = kwargs.get('seed', 0)
+        np.random.seed(seed)
+        # Initialize weights and biases
+        weights = []
+        biases = []
+        for i, j in zip(shapes[:-1], shapes[1:]):
+            # i: input dimension; j: output dimension
+            if method == 'zero':
+                weights.append(np.zeros((j, i), dtype='float'))
+                biases.append(np.zeros(j, dtype='float'))
+            elif method == 'uniform':
+                low = kwargs.get('low', 0.0)
+                high = kwargs.get('high', 1.0)
+                weights.append(np.random.uniform(low, high, (j, i)))
+                biases.append(np.zeros(j, dtype='float'))
+            elif method == 'xavier':
+                # Reference:
+                # Xavier Glorot, Yoshua Bengio
+                # Proceedings of the Thirteenth International Conference
+                # on Artificial Intelligence and Statistics,
+                # PMLR 9:249-256, 2010.
+                low = -np.sqrt(6) / np.sqrt(i + j)
+                high = -low
+                weights.append(np.random.uniform(low, high, (j, i)))
+                biases.append(np.zeros(j, dtype='float'))
+            elif method == 'normal':
+                mean = kwargs.get('mean', 0.0)
+                std = kwargs.get('std', 1.0)
+                weights.append(np.random.normal(mean, std, (j, i)))
+                biases.append(np.zeros(j, dtype='float'))
+            else:
+                raise ValueError("Unsupported initialization method")
+        return {'weights': weights,
+                'biases': biases}
