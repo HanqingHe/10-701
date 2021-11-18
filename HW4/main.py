@@ -35,21 +35,21 @@ if __name__ == '__main__':
     X_train, y_train = read_data(train_path)
     X_test, y_test = read_data(test_path)
 
-    # # Q6.2 ~ Q6.3
-    # n_iter = 50
-    # ada = Adaboost()
-    # ada.train(X_train, y_train, n_iter=n_iter)
-    # _, accs = ada.eval_model(X_test, y_test, full=True)
-    # # Save model and accs to file
-    # pickle.dump(ada, open(mod_path, 'wb'))
-    # pickle.dump(accs, open(acc_path, 'wb'))
-    # # Plot test accuracy
-    # mpl_default_setting()
-    # plt.plot(accs.index + 1, accs, 'ro--')
-    # plt.title('Test accuracy vs iteration')
-    # plt.xlabel('Iteration')
-    # plt.ylabel('Test accuracy')
-    # plt.show()
+    # Q6.2 ~ Q6.3
+    n_iter = 50
+    ada = Adaboost()
+    ada.train(X_train, y_train, n_iter=n_iter)
+    _, accs = ada.eval_model(X_test, y_test, full=True)
+    # Save model and accs to file
+    pickle.dump(ada, open(mod_path, 'wb'))
+    pickle.dump(accs, open(acc_path, 'wb'))
+    # Plot test accuracy
+    mpl_default_setting()
+    plt.plot(accs.index + 1, accs, 'ro--')
+    plt.title('Test accuracy vs iteration')
+    plt.xlabel('Iteration')
+    plt.ylabel('Test accuracy')
+    plt.show()
 
     # Q6.1
     ada = pickle.load(open(mod_path, 'rb'))
